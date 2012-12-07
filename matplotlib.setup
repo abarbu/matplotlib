@@ -1,0 +1,10 @@
+;;;  -*- Hen -*-
+
+(use setup-helper-mod)
+
+(verify-extension-name "matplotlib")
+
+(setup-shared-extension-module 'matplotlib (extension-version "1.0")
+  #:inline? #t #:types? #t
+  #:compile-options '(-O3 -d2)
+  #:install-options '((examples "matplotlib-examples.scm" "sexp.py")))

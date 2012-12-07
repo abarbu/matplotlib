@@ -1,0 +1,29 @@
+;;;  -*- Hen -*-
+
+((egg "matplotlib.egg")
+ (category graphics)
+ (author "Andrei Barbu")
+ (maintainer "Andrei Barbu")
+ (license "BSD")
+ (doc-from-wiki)
+ (synopsis "Bindings for matplotlib plotting library")
+ (depends
+  (setup-helper "1.5.2")
+  (miscmacros "2.91")
+  (shell "0.3")
+  (check-errors "1.12.0")
+  (condition-utils "1.0.0")
+  (define-structure "0.1")
+  (traversal "1.0"))
+ (test-depends test)
+ (files "examples/matplotlib-dwelling.scm"
+        "examples/matplotlib-extras.scm"
+        "examples/matplotlib-kalotan.scm"
+        "examples/matplotlib-money.scm" 
+        "examples/matplotlib-pythagorean.scm"
+        "examples/matplotlib-sat-solve.scm"
+        "matplotlib.meta" 
+        "matplotlib.release-info"
+        "matplotlib.scm" 
+        "matplotlib.setup" 
+        "tests/run.scm"))

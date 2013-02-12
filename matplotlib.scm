@@ -41,20 +41,16 @@
      (write-text-file data data-f)
      (system-output (string-append "python " code-f " " data-f)))))))
 
-(define (minimuml l) (minimum (map minimum l)))
-(define (maximuml l) (maximum (map maximum l)))
-
-(define (read-object-from-file pathname)
- (if (string=? pathname "-") (read) (call-with-input-file pathname read)))
-
-(define (write-object-to-file object pathname)
- (cond ((string=? pathname "-") (pp object) (newline))
-       (else (call-with-output-file pathname
-	      (lambda (port) (pp object port) (newline port))))))
+(define (##matplotlib#minimuml l) (minimum (map minimum l)))
+(define (##matplotlib#maximuml l) (maximum (map maximum l)))
 
 ;;;;;;;;;
 
 (define (with-temporary-object-file object f)
+ (define (write-object-to-file object pathname)
+  (cond ((string=? pathname "-") (pp object) (newline))
+        (else (call-with-output-file pathname
+               (lambda (port) (pp object port) (newline port))))))
  (##matplotlib#with-temporary-file
   "/tmp/data"
   (lambda (filename)
@@ -260,7 +256,7 @@
         (mplot-return
          `(,@mplot-py-axis-3d-projection
            ,@(mplot-py-surface 0 1 2)
-           ,@(mplot-py-contour 0 1 2 (maximuml xs) (maximuml ys) (minimuml zs))
+           ,@(mplot-py-contour 0 1 2 (##matplotlib#maximuml xs) (##matplotlib#maximuml ys) (##matplotlib#minimuml zs))
            ,@(mplot-py-axis-3d-labels xs ys zs)))))
 
 ;; TODO Split mplot-data out, will need to move some stuff into python
@@ -268,7 +264,7 @@
  (mplot (mplot-read-data (list xs ys zs))
         (mplot-return
          `(,@mplot-py-axis-3d-projection
-           ,@(mplot-py-contour 0 1 2 (maximuml xs) (maximuml ys) (minimuml zs))
+           ,@(mplot-py-contour 0 1 2 (##matplotlib#maximuml xs) (##matplotlib#maximuml ys) (##matplotlib#minimuml zs))
            ,@(mplot-py-axis-3d-labels xs ys zs)))))
 
 (define (mplot-contour-f f x-start x-end y-start y-end steps . options)
@@ -307,11 +303,11 @@
    ,(##matplotlib#string*-append "ax.contour(data[" a "], data[" b "], data[" c "], zdir='y', offset=" max-b")")))
 (define (mplot-py-axis-3d-labels xs ys zs)
  `("ax.set_xlabel('X')"
-   ,(##matplotlib#string*-append "ax.set_xlim3d(" (minimuml xs) ", " (maximuml xs) ")")
+   ,(##matplotlib#string*-append "ax.set_xlim3d(" (##matplotlib#minimuml xs) ", " (##matplotlib#maximuml xs) ")")
    "ax.set_ylabel('Y')"
-   ,(##matplotlib#string*-append "ax.set_ylim3d(" (minimuml ys) ", " (maximuml ys) ")")
+   ,(##matplotlib#string*-append "ax.set_ylim3d(" (##matplotlib#minimuml ys) ", " (##matplotlib#maximuml ys) ")")
    "ax.set_zlabel('Z')"
-   ,(##matplotlib#string*-append "ax.set_zlim3d(" (minimuml zs) ", " (maximuml zs) ")")))
+   ,(##matplotlib#string*-append "ax.set_zlim3d(" (##matplotlib#minimuml zs) ", " (##matplotlib#maximuml zs) ")")))
 
 
 (define (mplot-subplot-data-bar a width offset . options)

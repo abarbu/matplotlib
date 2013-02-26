@@ -447,6 +447,10 @@
                         (cadr s/e))
                     100)))
 
+(define (mplot-matshow data . options)
+ (mplot (mplot-read-data data)
+        (mplot-return (string*options-append "ax.matshow(data" options ")"))))
+
 (define (mplot-density l . s/e)
  (define (sqr x) (* x x))
  (define (list-mean p) 

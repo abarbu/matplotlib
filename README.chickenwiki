@@ -6,7 +6,7 @@ Do not edit this page, it is maintained in the this package's [https://github.co
 = matplotlib =
 
 This is a Chicken Scheme egg which provides an interface to
-[http://http://matplotlib.org matplotlib].
+[http://matplotlib.org matplotlib].
 
 It lets you build up a plot and then render it onto the screen, render
 it to a file, or generate Python code.

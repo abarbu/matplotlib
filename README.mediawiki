@@ -1,4 +1,4 @@
-= matplotlib =
+== matplotlib ==
 
 This is a Chicken Scheme egg which provides an interface to
 [http://matplotlib.org matplotlib].
@@ -6,11 +6,13 @@ This is a Chicken Scheme egg which provides an interface to
 It lets you build up a plot and then render it onto the screen, render
 it to a file, or generate Python code.
 
+Largely undocumented for now
+
 ==== High-level ====
 
-:(mplot-run-onscreen plot)
-:(mplot-run-code plot)
-:(mplot-run-figure filename plot)
+: (mplot-run-onscreen plot)
+: (mplot-run-code plot)
+: (mplot-run-figure filename plot)
 
 Given a plot it either runs it onscreen, prints out the Python code,
 or writes it out to a file.
@@ -21,19 +23,15 @@ See matplotlib-examples.scm for how to construct graphs.
 
 === License ===
 
-   Copyright 1993-1995 University of Toronto. All rights reserved.
-   Copyright 1996 Technion. All rights reserved.
-   Copyright 1996 and 1997 University of Vermont. All rights reserved.
-   Copyright 1997-2001 NEC Research Institute, Inc. All rights reserved.
-   Copyright 2002-2012 Purdue University. All rights reserved.
+   Copyright 2012-2013 Andrei Barbu. All rights reserved.
    This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
+   it under the terms of the GNU Lesser General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   You should have received a copy of the GNU General Public License
+   GNU Lesser General Public License for more details.
+   You should have received a copy of the GNU Lesser General Public License
    along with this program.  If not, see http://www.gnu.org/licenses.
 __NOTOC__

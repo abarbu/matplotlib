@@ -1,14 +1,10 @@
 (module matplotlib * 
 (import chicken scheme srfi-1 foreign posix extras files)
-(use posix foreigners shell irregex define-structure traversal)
+(use posix foreigners shell irregex define-structure traversal imlib2 scheme2c-compatibility)
+
+(define-structure matplotlib function)
 
 ;;;; misc
-
-(define (##matplotlib#with-temporary-file _ f)
- (let* ((name (create-temporary-file))
-        (result (f name)))
-  (delete-file* name)
-  result))
 
 (define (##matplotlib#string*-append . objs)
  (cond ((null? objs) "")
@@ -31,18 +27,18 @@
  (define (lines string) (irregex-split "\n" string))
  (define (system-output command)
   (lines (execute (list command) capture: #t)))
- (##matplotlib#with-temporary-file
+ (with-temporary-file
   "/tmp/code.py"
   (lambda (code-f)
-   (##matplotlib#with-temporary-file
+   (with-temporary-file
     "/tmp/data.py"
     (lambda (data-f)
      (write-text-file program code-f)
      (write-text-file data data-f)
-     (system-output (string-append "python " code-f " " data-f)))))))
+     (system-output (string-append "python2.7 " code-f " " data-f)))))))
 
-(define (##matplotlib#minimuml l) (minimum (map minimum l)))
-(define (##matplotlib#maximuml l) (maximum (map maximum l)))
+(define (##matplotlib#minimuml l) (minimume (map minimume l)))
+(define (##matplotlib#maximuml l) (maximume (map maximume l)))
 
 ;;;;;;;;;
 
@@ -51,7 +47,7 @@
   (cond ((string=? pathname "-") (pp object) (newline))
         (else (call-with-output-file pathname
                (lambda (port) (pp object port) (newline port))))))
- (##matplotlib#with-temporary-file
+ (with-temporary-file
   "/tmp/data"
   (lambda (filename)
    (write-object-to-file object filename)
@@ -84,48 +80,49 @@
 (define (mplot-py-figure output) `(,(string-append "plot.savefig('" output "')")))
 
 (define (mplot-run-onscreen plots)
- (plots (lambda (string)
-	 (python `(,@(mplot-py-includes)
-		   ,@string
-		   ,@mplot-py-detach
-		   ,@mplot-py-onscreen)
-		 '()))))
+ ((matplotlib-function plots) (lambda (string)
+                               (python `(,@(mplot-py-includes)
+                                         ,@string
+                                         ,@mplot-py-detach
+                                         ,@mplot-py-onscreen)
+                                       '()))))
 (define (mplot-run-code plots)
- (plots (lambda (string)
-	 (pp `(,@(mplot-py-includes)
-	       ,@string
-               ,@mplot-py-detach
-	       ,@mplot-py-onscreen)))))
+ ((matplotlib-function plots) (lambda (string)
+                               (pp `(,@(mplot-py-includes)
+                                     ,@string
+                                     ,@mplot-py-detach
+                                     ,@mplot-py-onscreen)))))
 (define (mplot-run-figure output plots)
- (plots (lambda (string)
-	 (python `(,@(mplot-py-includes)
-		   ,@string
-		   ,@(mplot-py-figure output))
-		 '()))))
-
-;; TODO, when imlib is up and running
-;; (define (mplot-run-imlib plots)
-;;  (##matplotlib#with-temporary-file
-;;   "/tmp/matplotlib-imlib.png"
-;;   (lambda (filename)
-;;    (plots (lambda (string)
-;; 	   (python `(,@(mplot-py-includes)
-;; 		     ,@string
-;; 		     ,@(mplot-py-figure filename))
-;; 		   '())))
-;;    (imlib-load-image-immediately! filename))))
+ ((matplotlib-function plots) (lambda (string)
+                               (python `(,@(mplot-py-includes)
+                                         ,@string
+                                         ,@(mplot-py-figure output))
+                                       '()))))
+(define (mplot-run-imlib plots)
+ (with-temporary-file
+  "/tmp/matplotlib-imlib.png"
+  (lambda (filename)
+   ((matplotlib-function plots)
+    (lambda (string)
+     (python `(,@(mplot-py-includes)
+               ,@string
+               ,@(mplot-py-figure filename))
+             '())))
+   (image-load filename))))
 
 (define (mplot-two a b)
- (lambda (run-function)
-  (a (lambda (string1)
-      (b (lambda (string2)
-	  (run-function (append string1 string2))))))))
+ (let ((a1 (matplotlib-function a))
+       (b1 (matplotlib-function b)))
+  (make-matplotlib
+   (lambda (run-function)
+    (a1 (lambda (string1)
+         (b1 (lambda (string2) (run-function (append string1 string2))))))))))
 
 (define (mplot-return s)
  (let ((s (cond ((list? s) s)
 		((string? s) (list s))
 		(else (error "fuck-up")))))
-  (lambda (run) (run s))))
+  (make-matplotlib (lambda (run) (run s)))))
 
 (define (mplot a . b)
  (qreduce
@@ -141,7 +138,6 @@
  (mplot-run-code (apply mplot (cons command commands))))
 (define (mplot-figure output command . commands)
  (mplot-run-figure output (apply mplot (cons command commands))))
-
 
 (define (mplot-data-plot a b default . options)
  (mplot-return
@@ -159,11 +155,12 @@
 ;;; Data, needs sexp.py
 
 (define (mplot-read-data data)
- (lambda (f)
-  (with-temporary-object-file
-   data
-   (lambda (filename)
-    (f (mplot-py-read-data filename))))))
+ (make-matplotlib
+  (lambda (f)
+   (with-temporary-object-file
+    data
+    (lambda (filename)
+     (f (mplot-py-read-data filename)))))))
 
 ;;; Options
 
@@ -439,12 +436,8 @@
                   ;; (gaussian-pdf (/ (- x xi) h))
                   ) l) (* n h)))
   (mplot-map-linear f
-                    (if (null? s/e)
-                        (minimum l)
-                        (car s/e))
-                    (if (null? s/e)
-                        (maximum l)
-                        (cadr s/e))
+                    (if (null? s/e) (minimume l) (car s/e))
+                    (if (null? s/e) (maximume l) (cadr s/e))
                     100)))
 
 (define (mplot-matshow data . options)

@@ -5,15 +5,9 @@
  (maintainer "Andrei Barbu")
  (license "LGPL")
  (synopsis "Bindings for the matplotlib plotting library")
- (depends
-  (setup-helper "1.5.2")
-  (miscmacros "2.91")
-  (shell "0.3")
-  (check-errors "1.12.0")
-  (condition-utils "1.0.0")
-  (define-structure "0.1")
-  (foreigners "1.4")
-  (traversal "1.0"))
+ (depends setup-helper miscmacros
+          shell check-errors condition-utils define-structure
+          foreigners traversal scheme2c-compatibility)
  (test-depends test)
  (files "matplotlib-examples.scm" 
         "matplotlib.meta" 

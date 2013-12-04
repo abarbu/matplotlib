@@ -24,6 +24,13 @@
                               (cos (degrees->radians b))))
                   -100 100 -200 200 10))
 
+(mplot-run-figure
+ "/tmp/a.png"
+ (mplot
+  (mplot-histogram '( 4 4 2 4 3 4 4 2 2 3 2 0 1 1 0 4 2 3 5 4 3 1 0 1 3 2 1 3 1 1 1 1 0 2 2 1 3 3 1 4 2 0 2 0 3 1 1 0 1 1 0 2 1 1 7 3 1 4 1 3 5 2 2 5 2 3 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0) 7)
+  (mplot-y-label "number of queries")
+  (mplot-x-label "true positives")))
+
 (mplot-run-onscreen
  (mplot (mplot-subplot-bars-labelled
          (list '(40 50 20 50) '(10 20 30 40) '(40 50 20 50))
